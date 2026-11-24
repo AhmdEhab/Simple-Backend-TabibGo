@@ -73,13 +73,19 @@ const providerProfileSchema = new mongoose.Schema(
     }],
 
     baseLocation: {
-      type: {
-        type: String,
-        enum: ["Point"]
-      },
-      coordinates: {
-        type: [Number]
-      }
+      type: new mongoose.Schema(
+        {
+          type: {
+            type: String,
+            enum: ["Point"]
+          },
+          coordinates: {
+            type: [Number]
+          }
+        },
+        { _id: false }
+      ),
+      default: undefined
     },
 
     isApproved: {
@@ -113,6 +119,8 @@ const providerProfileSchema = new mongoose.Schema(
 // Geospatial index
 providerProfileSchema.index({
   baseLocation: "2dsphere"
+}, {
+  sparse: true
 });
 
 const ProviderProfile = mongoose.model(

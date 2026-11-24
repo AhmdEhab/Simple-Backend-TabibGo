@@ -2,6 +2,13 @@
 const User = require("../models/User");
 const crypto = require("crypto");
 const OTPCode = require("../models/OTPCode");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+  rotateRefreshToken,
+  revokeRefreshToken
+} = require("./token.service");
+
 // Register User
 const registerUser = async ({ email, password, role }) => {
   const existingUser = await User.findOne({ email });
@@ -56,7 +63,30 @@ const loginUser = async ({ email, password }) => {
     throw error;
   }
 
-  return user;
+  // 5. Generate Access & Refresh tokens
+  const accessToken = generateAccessToken(user);
+  const refreshToken = await generateRefreshToken(user);
+
+  return {
+    user: {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      emailVerified: user.emailVerified
+    },
+    tokens: {
+      accessToken,
+      refreshToken
+    }
+  };
+};
+
+const refreshAuthToken = async (refreshToken) => {
+  return rotateRefreshToken(refreshToken);
+};
+
+const logoutUser = async (refreshToken) => {
+  return revokeRefreshToken(refreshToken);
 };
 
 const resetPassword = async ({ resetToken, newPassword }) => {
@@ -109,9 +139,10 @@ const resetPassword = async ({ resetToken, newPassword }) => {
   return true;
 };
 
-
 module.exports = {
   registerUser,
   loginUser,
+  refreshAuthToken,
+  logoutUser,
   resetPassword
 };

@@ -6,8 +6,14 @@ const router = express.Router();
 const {
   register,
   login,
-  resetPasswordController
+  refreshTokenController,
+  logout,
+  resetPasswordController,
+  getMe
 } = require("../controllers/auth.controller");
+
+// Auth Middleware
+const { authenticate } = require("../middleware/auth.middleware");
 
 // OTP Controllers
 const {
@@ -42,6 +48,25 @@ router.post(
   loginValidation,
   validateRequest,
   login
+);
+
+// Refresh Token
+router.post(
+  "/refresh-token",
+  refreshTokenController
+);
+
+// Logout
+router.post(
+  "/logout",
+  logout
+);
+
+// Protected test endpoint: Get current user info
+router.get(
+  "/me",
+  authenticate,
+  getMe
 );
 
 // Email Verification

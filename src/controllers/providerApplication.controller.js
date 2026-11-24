@@ -1,6 +1,6 @@
-
 const {
-  createProviderApplication
+  createProviderApplication,
+  getMyApplication
 } = require("../services/providerApplication.service");
 
 const createApplication = async (req, res) => {
@@ -28,20 +28,17 @@ const createApplication = async (req, res) => {
       });
     }
 
-    // 3. Get provider ID from authenticated user
-    const providerId = req.providerProfile._id;
-
-    // 4. Call service
+    // 3. Call service with authenticated user's ID
     const application = await createProviderApplication({
-      providerId,
-      licenseNumber,
+      userId: req.user._id,
+      licenseNumber: licenseNumber.trim(),
       licenseExpiry: expiryDate
     });
 
-    // 5. Send response
+    // 4. Send response
     return res.status(201).json({
       success: true,
-      message: "Provider application created successfully.",
+      message: "Provider application submitted successfully.",
       data: {
         application
       }
@@ -52,11 +49,32 @@ const createApplication = async (req, res) => {
 
     return res.status(error.statusCode || 500).json({
       success: false,
+      message: error.message || "Internal server error.",
+      details: error.details || undefined
+    });
+  }
+};
+
+const getApplicationStatus = async (req, res) => {
+  try {
+    const result = await getMyApplication(req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Application status retrieved successfully.",
+      data: result
+    });
+  } catch (error) {
+    console.error("Get Application Error:", error.message);
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
       message: error.message || "Internal server error."
     });
   }
 };
 
 module.exports = {
-  createApplication
+  createApplication,
+  getApplicationStatus
 };

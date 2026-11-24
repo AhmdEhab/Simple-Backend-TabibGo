@@ -1,6 +1,8 @@
 const {
   registerUser,
   loginUser,
+  refreshAuthToken,
+  logoutUser,
   resetPassword: resetPasswordService
 } = require("../services/auth.service");
 
@@ -43,7 +45,7 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await loginUser({
+    const result = await loginUser({
       email,
       password
     });
@@ -51,18 +53,54 @@ const login = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Login successful.",
-      data: {
-        user: {
-          id: user._id,
-          email: user.email,
-          role: user.role,
-          emailVerified: user.emailVerified
-        }
-      }
+      data: result
     });
 
   } catch (error) {
     console.error("Login Error:", error.message);
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal server error."
+    });
+  }
+};
+
+// Refresh Token
+const refreshTokenController = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    const result = await refreshAuthToken(refreshToken);
+
+    return res.status(200).json({
+      success: true,
+      message: "Token refreshed successfully.",
+      data: result
+    });
+  } catch (error) {
+    console.error("Refresh Token Error:", error.message);
+
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal server error."
+    });
+  }
+};
+
+// Logout
+const logout = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    await logoutUser(refreshToken);
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully."
+    });
+  } catch (error) {
+    console.error("Logout Error:", error.message);
 
     return res.status(error.statusCode || 500).json({
       success: false,
@@ -96,8 +134,36 @@ const resetPasswordController = async (req, res) => {
   }
 };
 
+// Get current user (protected verification endpoint)
+const getMe = async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      message: "User profile retrieved successfully.",
+      data: {
+        user: {
+          id: req.user._id,
+          email: req.user.email,
+          role: req.user.role,
+          emailVerified: req.user.emailVerified,
+          isActive: req.user.isActive,
+          createdAt: req.user.createdAt
+        }
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error."
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
-  resetPasswordController
+  refreshTokenController,
+  logout,
+  resetPasswordController,
+  getMe
 };

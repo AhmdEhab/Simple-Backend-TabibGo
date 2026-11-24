@@ -5,7 +5,8 @@
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "test": "node test_suite.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "express-validator": "^7.3.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.11.4",
+    "multer": "^2.5.0",
     "nodemailer": "^10.3.1"
   },
   "devDependencies": {

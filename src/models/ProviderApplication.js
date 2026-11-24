@@ -44,7 +44,7 @@ const providerApplicationSchema = new mongoose.Schema(
     },
 
     decidedByAdminId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       default: null
     },
 
