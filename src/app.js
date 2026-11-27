@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 require("dotenv").config();
 
@@ -11,14 +12,23 @@ const providerApplicationRoutes = require("./routes/providerApplication.routes")
 const internalReviewRoutes = require("./routes/internalReview.routes");
 const serviceRoutes = require("./routes/service.routes");
 const serviceRequestRoutes = require("./routes/serviceRequest.routes");
+const uploadRoutes = require("./routes/upload.routes");
+const patientRoutes = require("./routes/patient.routes");
+const providerRoutes = require("./routes/provider.routes");
+const catalogRoutes = require("./routes/catalog.routes");
+const bookingRoutes = require("./routes/booking.routes");
+const requestRoutes = require("./routes/request.routes");
+const notificationRoutes = require("./routes/notification.routes");
+const publicProviderRoutes = require("./routes/publicProvider.routes");
 const { seedInitialProfessions } = require("./services/profile.service");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "../storage/documents")));
 
-// Routes
+// Existing Routes (preserved for full backward compatibility)
 app.use("/api/auth", authRoutes);
 app.use("/api/profiles", profileRoutes);
 app.use("/api/documents", documentRoutes);
@@ -26,6 +36,16 @@ app.use("/api/provider-applications", providerApplicationRoutes);
 app.use("/api/internal/reviews", internalReviewRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/service-requests", serviceRequestRoutes);
+
+// New Contract Routes
+app.use("/api/uploads", uploadRoutes);
+app.use("/api/patient", patientRoutes);
+app.use("/api/provider", providerRoutes);
+app.use("/api/catalog", catalogRoutes);
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/requests", requestRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/providers", publicProviderRoutes);
 
 // Health check / Test Route
 app.get("/", (req, res) => {

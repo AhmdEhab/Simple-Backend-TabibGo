@@ -46,7 +46,15 @@ const userDocumentSchema = new mongoose.Schema(
 
     storageKey: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.fileUrl;
+      },
+      trim: true
+    },
+
+    fileUrl: {
+      type: String,
+      default: null,
       trim: true
     },
 

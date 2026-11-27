@@ -32,6 +32,13 @@ const serviceSchema = new mongoose.Schema(
       index: true
     },
 
+    catalogId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ServiceCatalog",
+      default: null,
+      index: true
+    },
+
     title: {
       type: String,
       required: true,

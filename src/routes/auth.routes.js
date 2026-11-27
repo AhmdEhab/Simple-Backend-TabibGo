@@ -23,6 +23,9 @@ const {
   verifyPasswordReset
 } = require("../controllers/otp.controller");
 
+// Google Auth Controller
+const { googleSignIn } = require("../controllers/googleAuth.controller");
+
 // Validations
 const {
   registerValidation,
@@ -50,10 +53,20 @@ router.post(
   login
 );
 
-// Refresh Token
+// Refresh Token (contract alias /refresh + legacy /refresh-token)
 router.post(
   "/refresh-token",
   refreshTokenController
+);
+router.post(
+  "/refresh",
+  refreshTokenController
+);
+
+// Google Sign-In (Contract compliant)
+router.post(
+  "/google",
+  googleSignIn
 );
 
 // Logout
@@ -69,9 +82,13 @@ router.get(
   getMe
 );
 
-// Email Verification
+// Email Verification (contract alias /otp/request & /otp/verify + legacy)
 router.post(
   "/send-verification-otp",
+  sendVerificationOTP
+);
+router.post(
+  "/otp/request",
   sendVerificationOTP
 );
 
@@ -79,6 +96,10 @@ router.post(
   "/verify-email",
   verifyEmailValidation,
   validateRequest,
+  verifyEmail
+);
+router.post(
+  "/otp/verify",
   verifyEmail
 );
 

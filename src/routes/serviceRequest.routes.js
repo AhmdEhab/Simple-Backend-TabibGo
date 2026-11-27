@@ -12,7 +12,7 @@ const {
   updateExecutionStatus
 } = require("../controllers/serviceRequest.controller");
 
-// Protected by JWT
+
 router.use(authenticate);
 
 // Patient endpoints
